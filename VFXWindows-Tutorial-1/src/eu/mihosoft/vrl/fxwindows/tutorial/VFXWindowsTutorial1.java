@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package vfxwindows.tutorial.pkg1;
+package eu.mihosoft.vrl.fxwindows.tutorial;
 
 import eu.mihosoft.vrl.fxwindows.Window;
 import javafx.application.Application;
