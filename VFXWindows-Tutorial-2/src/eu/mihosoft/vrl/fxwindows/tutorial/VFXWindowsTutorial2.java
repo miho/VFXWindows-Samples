@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * First VFXWindows tutorial.
+ * Second VFXWindows tutorial.
  * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
