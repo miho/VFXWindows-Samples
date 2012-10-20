@@ -6,9 +6,13 @@ package eu.mihosoft.vrl.fxwindows.tutorial;
 
 import eu.mihosoft.vrl.fxwindows.CloseIcon;
 import eu.mihosoft.vrl.fxwindows.MinimizeIcon;
-import eu.mihosoft.vrl.fxwindows.RotateIcon;
 import eu.mihosoft.vrl.fxwindows.Window;
 import eu.mihosoft.vrl.fxwindows.WindowIcon;
+import java.util.Map;
+import java.util.Stack;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -26,6 +30,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 
@@ -35,7 +40,7 @@ import javafx.util.Callback;
  */
 public class BrowserWindow extends Window {
 
-    private WebEngine engine;
+    private WebController webController;
     private int historyIndex = -1;
 
     public BrowserWindow(final Pane canvas, final String url) {
@@ -48,13 +53,12 @@ public class BrowserWindow extends Window {
         // .. or to the right
         getRightIcons().add(new MinimizeIcon(this));
 
-
         MenuItem newWindowItem = new MenuItem("New Window");
 
         newWindowItem.onActionProperty().set(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                Window newW = new BrowserWindow(canvas, url);
+                Window newW = new BrowserWindow(canvas, webController.engine.getLocation());
 
                 newW.setPrefSize(getPrefWidth(), getPrefHeight());
                 canvas.getChildren().add(newW);
@@ -83,8 +87,9 @@ public class BrowserWindow extends Window {
 
         // create a webview and define the webpage to load
         final WebView view = new WebView();
-        engine = view.getEngine();
-        engine.load(url);
+
+        webController = new WebController(view.getEngine());
+        webController.load(url);
 
         view.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
             @Override
@@ -94,7 +99,7 @@ public class BrowserWindow extends Window {
                 newW.setPrefSize(getPrefWidth(), getPrefHeight());
                 canvas.getChildren().add(newW);
 
-                return newW.engine;
+                return newW.webController.engine;
             }
         });
 
@@ -126,10 +131,11 @@ public class BrowserWindow extends Window {
                         locationField.setText(newValue);
                     }
                 });
+
         EventHandler<ActionEvent> goAction = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                view.getEngine().load(
+                webController.load(
                         locationField.getText().startsWith("http://")
                         ? locationField.getText()
                         : "http://" + locationField.getText());
@@ -142,49 +148,37 @@ public class BrowserWindow extends Window {
         goButton.setDefaultButton(true);
         goButton.setOnAction(goAction);
 
-        final Button backButton = new Button("<-");
-        backButton.setOnAction(goAction);
-        backButton.setDisable(true);
-
-        titleProperty().bind(view.getEngine().titleProperty());
-        
-        view.getEngine().locationProperty().addListener(new ChangeListener<String>() {
-
-            @Override
-            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-                historyIndex = -1;
-            }
-        });
-
-        view.getEngine().getHistory().currentIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
-                backButton.setDisable(t1.intValue() < 1);
-            }
-        });
 
         EventHandler<ActionEvent> backAction = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
-                if (historyIndex < 0) {
-                    historyIndex = view.getEngine().getHistory().getCurrentIndex();
-                }
-
-                int newIndex = historyIndex - 1;
-
-                String url =
-                        view.getEngine().getHistory().getEntries().get(newIndex).getUrl();
-
-                view.getEngine().load(url);
+                webController.backward();
             }
         };
 
+        EventHandler<ActionEvent> forAction = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                webController.forward();
+            }
+        };
+
+        final Button backButton = new Button("<-");
         backButton.setOnAction(backAction);
+        backButton.setDisable(true);
+
+        final Button forButton = new Button("->");
+        forButton.setOnAction(forAction);
+        forButton.setDisable(true);
+
+        backButton.disableProperty().bind(webController.backwardIsEmptyProperty);
+        forButton.disableProperty().bind(webController.forwardIsEmptyProperty);
+
+        titleProperty().bind(view.getEngine().titleProperty());
 
         // Layout logic
         HBox hBox = new HBox(5);
-        hBox.getChildren().setAll(backButton, locationField, goButton);
+        hBox.getChildren().setAll(backButton, forButton, locationField, goButton);
         HBox.setHgrow(locationField, Priority.ALWAYS);
 
         VBox vBox = new VBox(5);
@@ -194,5 +188,95 @@ public class BrowserWindow extends Window {
         content.getChildren().add(vBox);
 
         return content;
+    }
+
+    static class WebController {
+
+        static enum Direction {
+
+            FORWARD,
+            BACKWARD,
+            NONE
+        };
+        private Stack<String> oldEntries = new Stack<String>();
+        private Stack<String> newEntries = new Stack<String>();
+        private WebEngine engine;
+        private BooleanProperty backwardIsEmptyProperty = new SimpleBooleanProperty();
+        private BooleanProperty forwardIsEmptyProperty = new SimpleBooleanProperty();
+        private Direction direction = Direction.NONE;
+
+        public WebController(WebEngine engine) {
+            this.engine = engine;
+
+            engine.locationProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+
+                    if (t == null || t.isEmpty()) {
+                        backwardIsEmptyProperty.set(oldEntries.isEmpty());
+                        forwardIsEmptyProperty.set(newEntries.isEmpty());
+                        return;
+                    }
+
+                    if (direction == Direction.BACKWARD) {
+                        newEntries.push(t);
+                    } else if (direction == Direction.FORWARD) {
+                        oldEntries.push(t);
+                    }
+
+                    backwardIsEmptyProperty.set(oldEntries.isEmpty());
+                    forwardIsEmptyProperty.set(newEntries.isEmpty());
+                }
+            });
+        }
+
+        public void backward() {
+
+            direction = Direction.BACKWARD;
+
+            if (oldEntries.isEmpty()) {
+                return;
+            }
+
+            String e = oldEntries.pop();
+
+            engine.load(e);
+        }
+
+        public void forward() {
+
+            direction = Direction.FORWARD;
+
+            if (newEntries.isEmpty()) {
+                return;
+            }
+
+            String e = newEntries.pop();
+
+            engine.load(e);
+        }
+
+        public void load(String url) {
+
+            direction = Direction.FORWARD;
+
+            engine.load(url);
+
+            newEntries.clear();
+        }
+
+        /**
+         * @return the backwardIsEmptyProperty
+         */
+        public ReadOnlyBooleanProperty getBackwardIsEmptyProperty() {
+            return backwardIsEmptyProperty;
+        }
+
+        /**
+         * @return the forwardIsEmptyProperty
+         */
+        public ReadOnlyBooleanProperty getForwardIsEmptyProperty() {
+            return forwardIsEmptyProperty;
+        }
     }
 }

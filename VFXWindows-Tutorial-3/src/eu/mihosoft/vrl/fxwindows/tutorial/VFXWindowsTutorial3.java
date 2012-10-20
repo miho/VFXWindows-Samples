@@ -34,7 +34,7 @@ public class VFXWindowsTutorial3 extends Application {
         // create a scene that displays the scrollpane (resolution 600,600)
         Scene scene = new Scene(scrollPane, 800, 800);
 
-        Window w = new BrowserWindow(canvas, "http://google.com");
+        Window w = new BrowserWindow(canvas, "http://www.google.com");
 
         // set the window position to 10,10 (coordinates inside canvas)
         w.setLayoutX(10);
