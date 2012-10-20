@@ -8,7 +8,7 @@ import eu.mihosoft.vrl.fxwindows.CloseIcon;
 import eu.mihosoft.vrl.fxwindows.MinimizeIcon;
 import eu.mihosoft.vrl.fxwindows.Window;
 import eu.mihosoft.vrl.fxwindows.WindowIcon;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Stack;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -19,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -30,7 +31,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 
@@ -58,10 +58,9 @@ public class BrowserWindow extends Window {
         newWindowItem.onActionProperty().set(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                Window newW = new BrowserWindow(canvas, webController.engine.getLocation());
+                Window newW = createAndAddWindow(canvas, "http://www.google.com");
 
                 newW.setPrefSize(getPrefWidth(), getPrefHeight());
-                canvas.getChildren().add(newW);
             }
         });
 
@@ -94,10 +93,9 @@ public class BrowserWindow extends Window {
         view.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
             @Override
             public WebEngine call(PopupFeatures p) {
-                BrowserWindow newW = new BrowserWindow(canvas, url);
+                BrowserWindow newW = createAndAddWindow(canvas, "http://www.google.com");
 
                 newW.setPrefSize(getPrefWidth(), getPrefHeight());
-                canvas.getChildren().add(newW);
 
                 return newW.webController.engine;
             }
@@ -106,6 +104,42 @@ public class BrowserWindow extends Window {
         // create a webview with address field and add the content pane
         setContentPane(createWindowContent(canvas, view, DEFAULT_STYLE_CLASS));
 
+    }
+    
+    
+    public static BrowserWindow createAndAddWindow(final Pane canvas, String url) {
+        BrowserWindow w = new BrowserWindow(canvas, url);
+
+        // set the window position to 10,10 (coordinates inside canvas)
+        w.setLayoutX(10);
+        w.setLayoutY(10);
+
+        // define the initial window size
+        w.setPrefSize(600, 400);
+
+        // add the window to the canvas
+        canvas.getChildren().add(w);
+
+        w.setOnCloseAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+
+                ArrayList<BrowserWindow> browserWindows =
+                        new ArrayList<BrowserWindow>();
+
+                for (Node n : canvas.getChildrenUnmodifiable()) {
+                    if (n instanceof BrowserWindow) {
+                        browserWindows.add((BrowserWindow) n);
+                    }
+                }
+
+                if (browserWindows.size() == 1) {
+                    createAndAddWindow(canvas, "http://www.google.com");
+                }
+            }
+        });
+        
+        return w;
     }
 
     /**

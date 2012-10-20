@@ -5,7 +5,11 @@
 package eu.mihosoft.vrl.fxwindows.tutorial;
 
 import eu.mihosoft.vrl.fxwindows.Window;
+import java.util.ArrayList;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -32,25 +36,15 @@ public class VFXWindowsTutorial3 extends Application {
         scrollPane.setContent(canvas);
 
         // create a scene that displays the scrollpane (resolution 600,600)
-        Scene scene = new Scene(scrollPane, 800, 800);
+        Scene scene = new Scene(scrollPane, 1200, 800);
 
-        Window w = new BrowserWindow(canvas, "http://www.google.com");
-
-        // set the window position to 10,10 (coordinates inside canvas)
-        w.setLayoutX(10);
-        w.setLayoutY(10);
-
-        // define the initial window size
-        w.setPrefSize(400, 300);
-
-        // add the window to the canvas
-        canvas.getChildren().add(w);
+        BrowserWindow.createAndAddWindow(canvas, "http://www.google.com");
 
         // init and show the stage
         primaryStage.setTitle("VFXWindows Tutorial 03");
         primaryStage.setScene(scene);
         primaryStage.show();
-    }    
+    }
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
@@ -63,4 +57,5 @@ public class VFXWindowsTutorial3 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
