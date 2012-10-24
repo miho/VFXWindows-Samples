@@ -1,0 +1,35 @@
+/* 
+    Document   : default.css
+    Created on : 25.10.2012, 00:05:27
+    Author     : Michael Hoffer <info@michaelhoffer.de>
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.background {
+    /*-fx-background-color: rgb(42,42,42);*/
+    /*-fx-background-color: linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%);*/
+
+    /*    -fx-background-color: linear-gradient(
+            rgb(32,32,32) 0%,
+            rgb(92,92,92) 15%,
+            rgb(118,118,122) 25%,
+            rgb(128,128,132) 45%,
+            rgb(128,128,132) 55%,
+            rgb(92,92,92) 85%,
+            rgb(32,32,32) 100%);*/
+
+    /*    -fx-background-color: linear-gradient(
+            rgb(32,32,40) 0%,
+            rgb(132,132,142) 40%,
+            rgb(142,142,152) 50%,
+            rgb(132,132,142) 60%,
+            rgb(32,32,40) 100%);*/
+
+
+    -fx-background-color: linear-gradient(
+        rgb(236,238,240) 0%,
+        rgb(142,142,152) 100%);
+
+}
+
