@@ -32,6 +32,10 @@ public class VFXWindowsTutorial3 extends Application {
 
         // create a scrollpane
         ScrollPane scrollPane = new ScrollPane();
+        
+        scrollPane.getStyleClass().add("background");
+        scrollPane.getStylesheets().add(
+                "/eu/mihosoft/vrl/fxwindows/tutorial/resources/default.css");
 
         // define the scrollpane content
         scrollPane.setContent(canvas);

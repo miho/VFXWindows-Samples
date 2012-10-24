@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.RotateEvent;
 import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.HBox;
@@ -31,6 +32,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -122,6 +124,10 @@ public class BrowserWindow extends Window {
             
             event.consume();
         }});
+        
+        DropShadow shadow = new DropShadow(18, Color.BLACK);
+        
+        setEffect(shadow);
         
     }
     
