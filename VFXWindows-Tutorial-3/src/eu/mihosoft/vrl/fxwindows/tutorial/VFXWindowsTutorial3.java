@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.RotateEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -35,11 +36,11 @@ public class VFXWindowsTutorial3 extends Application {
         // define the scrollpane content
         scrollPane.setContent(canvas);
 
-        // create a scene that displays the scrollpane (resolution 600,600)
+        // create a scene that displays the scrollpane (resolution 1200, 1200)
         Scene scene = new Scene(scrollPane, 1200, 800);
 
         BrowserWindow.createAndAddWindow(canvas, "http://www.google.com");
-
+        
         // init and show the stage
         primaryStage.setTitle("VFXWindows Tutorial 03");
         primaryStage.setScene(scene);
