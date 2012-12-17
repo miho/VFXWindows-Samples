@@ -35,9 +35,6 @@ public class VFXWindowsTutorial1 extends Application {
         
         // define the initial window size
         w.setPrefSize(300, 200);
-        
-        w.setResizableWindow(false);
-        w.setMovable(false);
 
         // add the window to the canvas
         canvas.getChildren().add(w);
