@@ -4,10 +4,6 @@
  */
 package eu.mihosoft.vrl.fxwindows.tutorial;
 
-import eu.mihosoft.vrl.fxwindows.CloseIcon;
-import eu.mihosoft.vrl.fxwindows.MinimizeIcon;
-import eu.mihosoft.vrl.fxwindows.Window;
-import eu.mihosoft.vrl.fxwindows.WindowIcon;
 import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -16,6 +12,10 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import jfxtras.labs.scene.control.window.CloseIcon;
+import jfxtras.labs.scene.control.window.MinimizeIcon;
+import jfxtras.labs.scene.control.window.Window;
+import jfxtras.labs.scene.control.window.WindowIcon;
 
 /**
  * Second VFXWindows tutorial.

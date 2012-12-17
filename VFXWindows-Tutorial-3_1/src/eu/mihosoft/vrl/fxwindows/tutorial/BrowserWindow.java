@@ -20,15 +20,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.input.RotateEvent;
-import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.web.PopupFeatures;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -108,27 +104,6 @@ public class BrowserWindow extends Window {
         // create a webview with address field and add the content pane
         setContentPane(createWindowContent(canvas, view, DEFAULT_STYLE_CLASS));
 
-        
-        setOnRotate(new EventHandler<RotateEvent>() {
-        @Override public void handle(RotateEvent event) {
-            
-            setRotate(getRotate() + event.getAngle());
-            event.consume();
-        }});
-        
-        setOnZoom(new EventHandler<ZoomEvent>() {
-        @Override public void handle(ZoomEvent event) {
-            
-            setScaleX(getScaleX() * event.getZoomFactor());
-            setScaleY(getScaleY() * event.getZoomFactor());
-            
-            event.consume();
-        }});
-        
-        DropShadow shadow = new DropShadow(18, Color.BLACK);
-        
-        setEffect(shadow);
-        
     }
     
     

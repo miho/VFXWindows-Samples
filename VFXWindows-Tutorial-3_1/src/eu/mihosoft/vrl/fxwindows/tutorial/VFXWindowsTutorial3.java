@@ -5,10 +5,14 @@
 package eu.mihosoft.vrl.fxwindows.tutorial;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jfxtras.labs.scene.control.window.Window;
 
 /**
  * Third VFXWindows tutorial.
@@ -25,10 +29,6 @@ public class VFXWindowsTutorial3 extends Application {
 
         // create a scrollpane
         ScrollPane scrollPane = new ScrollPane();
-        
-        scrollPane.getStyleClass().add("background");
-        scrollPane.getStylesheets().add(
-                "/eu/mihosoft/vrl/fxwindows/tutorial/resources/default.css");
 
         // define the scrollpane content
         scrollPane.setContent(canvas);
@@ -38,6 +38,22 @@ public class VFXWindowsTutorial3 extends Application {
 
         BrowserWindow.createAndAddWindow(canvas, "http://www.google.com");
         
+        Window w = new Window("Chart Sample 01");
+        
+        ObservableList<PieChart.Data> pieChartData =
+                FXCollections.observableArrayList(
+                new PieChart.Data("Grapefruit", 13),
+                new PieChart.Data("Oranges", 25),
+                new PieChart.Data("Plums", 10),
+                new PieChart.Data("Pears", 22),
+                new PieChart.Data("Apples", 30));
+        final PieChart chart = new PieChart(pieChartData);
+        chart.setTitle("Imported Fruits");
+
+        w.getContentPane().getChildren().add(chart);
+        
+        canvas.getChildren().add(w);
+
         // init and show the stage
         primaryStage.setTitle("VFXWindows Tutorial 03");
         primaryStage.setScene(scene);

@@ -4,11 +4,11 @@
  */
 package eu.mihosoft.vrl.fxwindows.tutorial;
 
-import eu.mihosoft.vrl.fxwindows.Window;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jfxtras.labs.scene.control.window.Window;
 
 /**
  * First VFXWindows tutorial.
@@ -35,6 +35,9 @@ public class VFXWindowsTutorial1 extends Application {
         
         // define the initial window size
         w.setPrefSize(300, 200);
+        
+        w.setResizableWindow(false);
+        w.setMovable(false);
 
         // add the window to the canvas
         canvas.getChildren().add(w);
