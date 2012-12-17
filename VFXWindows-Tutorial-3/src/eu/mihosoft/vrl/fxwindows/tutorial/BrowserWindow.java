@@ -108,30 +108,33 @@ public class BrowserWindow extends Window {
         // create a webview with address field and add the content pane
         setContentPane(createWindowContent(canvas, view, DEFAULT_STYLE_CLASS));
 
-        
+
         setOnRotate(new EventHandler<RotateEvent>() {
-        @Override public void handle(RotateEvent event) {
-            
-            setRotate(getRotate() + event.getAngle());
-            event.consume();
-        }});
-        
+            @Override
+            public void handle(RotateEvent event) {
+
+                setRotate(getRotate() + event.getAngle());
+                event.consume();
+            }
+        });
+
         setOnZoom(new EventHandler<ZoomEvent>() {
-        @Override public void handle(ZoomEvent event) {
-            
-            setScaleX(getScaleX() * event.getZoomFactor());
-            setScaleY(getScaleY() * event.getZoomFactor());
-            
-            event.consume();
-        }});
-        
+            @Override
+            public void handle(ZoomEvent event) {
+
+                setScaleX(getScaleX() * event.getZoomFactor());
+                setScaleY(getScaleY() * event.getZoomFactor());
+
+                event.consume();
+            }
+        });
+
         DropShadow shadow = new DropShadow(18, Color.BLACK);
-        
+
         setEffect(shadow);
-        
+
     }
-    
-    
+
     public static BrowserWindow createAndAddWindow(final Pane canvas, String url) {
         BrowserWindow w = new BrowserWindow(canvas, url);
 
@@ -163,7 +166,7 @@ public class BrowserWindow extends Window {
                 }
             }
         });
-        
+
         return w;
     }
 
@@ -194,10 +197,14 @@ public class BrowserWindow extends Window {
         EventHandler<ActionEvent> goAction = new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                webController.load(
-                        locationField.getText().startsWith("http://")
-                        ? locationField.getText()
-                        : "http://" + locationField.getText());
+
+                String location = locationField.getText();
+
+                if (!location.startsWith("http://") && !location.startsWith("file://")) {
+                    location = "http://" + location;
+                }
+
+                webController.load(location);
             }
         };
 
